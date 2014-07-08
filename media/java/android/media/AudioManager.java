@@ -550,6 +550,9 @@ public class AudioManager {
                  */
                 int flags = FLAG_SHOW_UI | FLAG_VIBRATE;
 
+				if(isStreamMute(3))
+				    setStreamMute(3, !isStreamMute(3));
+
                 if (mUseMasterVolume) {
                     adjustMasterVolume(
                             keyCode == KeyEvent.KEYCODE_VOLUME_UP
@@ -570,7 +573,7 @@ public class AudioManager {
                     if (mUseMasterVolume) {
                         setMasterMute(!isMasterMute());
                     } else {
-                        // TODO: Actually handle MUTE.
+					    setStreamMute(3, !isStreamMute(3));
                     }
                 }
                 break;

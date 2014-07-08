@@ -717,7 +717,8 @@ public class AudioTrack
             && (audioFormat != AudioFormat.ENCODING_EVRC)
             && (audioFormat != AudioFormat.ENCODING_EVRCB)
             && (audioFormat != AudioFormat.ENCODING_EVRCWB)
-            && (audioFormat != AudioFormat.ENCODING_EVRCNW)) {
+            && (audioFormat != AudioFormat.ENCODING_EVRCNW)
+            && (audioFormat != AudioFormat.ENCODING_PCM_24BIT)) {
             loge("getMinBufferSize(): Invalid audio format.");
             return ERROR_BAD_VALUE;
         }
