@@ -216,7 +216,7 @@ public class AudioService extends IAudioService.Stub {
         5,  // STREAM_VOICE_CALL
         7,  // STREAM_SYSTEM
         7,  // STREAM_RING
-        15, // STREAM_MUSIC
+        45, // STREAM_MUSIC
         7,  // STREAM_ALARM
         7,  // STREAM_NOTIFICATION
         15, // STREAM_BLUETOOTH_SCO
@@ -442,7 +442,7 @@ public class AudioService extends IAudioService.Stub {
     // Devices for which the volume is fixed and VolumePanel slider should be disabled
     final int mFixedVolumeDevices = AudioSystem.DEVICE_OUT_AUX_DIGITAL |
             AudioSystem.DEVICE_OUT_DGTL_DOCK_HEADSET |
-            AudioSystem.DEVICE_OUT_ALL_USB |
+            //AudioSystem.DEVICE_OUT_ALL_USB |
             AudioSystem.DEVICE_OUT_PROXY; // use fixed volume on proxy device(WiFi display)
 
     // TODO merge orientation and rotation
@@ -2903,6 +2903,7 @@ public class AudioService extends IAudioService.Stub {
     }
 
     public void setWiredDeviceConnectionState(int device, int state, String name) {
+               Log.i(TAG, "setWiredDeviceConnectionState: device="+device+" state="+state+" name="+name);
         synchronized (mConnectedDevices) {
             int delay = checkSendBecomingNoisyIntent(device, state);
             queueMsgUnderWakeLock(mAudioHandler,
@@ -4018,17 +4019,22 @@ public class AudioService extends IAudioService.Stub {
     }
 
     private boolean handleDeviceConnection(boolean connected, int device, String params) {
+        Log.i(TAG, "handleDeviceConnection: connected="+connected+" device="+device+" params="+params);
         synchronized (mConnectedDevices) {
             boolean isConnected = (mConnectedDevices.containsKey(device) &&
                     (params.isEmpty() || mConnectedDevices.get(device).equals(params)));
+               Log.i(TAG, "handleDeviceConnection: connected="+connected+" isConnected="+isConnected+" device="+device+" params="+params);
 
-            if (isConnected && !connected) {
+       if (!connected) {
+                Log.i(TAG, "handleDeviceConnection: setDeviceConnectionState DEVICE_STATE_UNAVAILABLE");
                 AudioSystem.setDeviceConnectionState(device,
                                               AudioSystem.DEVICE_STATE_UNAVAILABLE,
                                               mConnectedDevices.get(device));
                  mConnectedDevices.remove(device);
                  return true;
-            } else if (!isConnected && connected) {
+           }
+
+           Log.i(TAG, "handleDeviceConnection: setDeviceConnectionState DEVICE_STATE_AVAILABLE");
                  AudioSystem.setDeviceConnectionState(device,
                                                       AudioSystem.DEVICE_STATE_AVAILABLE,
                                                       params);
@@ -4036,8 +4042,6 @@ public class AudioService extends IAudioService.Stub {
                  return true;
             }
         }
-        return false;
-    }
 
     // Devices which removal triggers intent ACTION_AUDIO_BECOMING_NOISY. The intent is only
     // sent if none of these devices is connected.
@@ -4131,6 +4135,7 @@ public class AudioService extends IAudioService.Stub {
 
     private void onSetWiredDeviceConnectionState(int device, int state, String name)
     {
+        Log.i(TAG, "onSetWiredDeviceConnectionState: device="+device+" state="+state+" name="+name);
         synchronized (mConnectedDevices) {
             if ((state == 0) && ((device == AudioSystem.DEVICE_OUT_WIRED_HEADSET) ||
                     (device == AudioSystem.DEVICE_OUT_WIRED_HEADPHONE))) {
@@ -4141,6 +4146,7 @@ public class AudioService extends IAudioService.Stub {
             if (state != 0) {
                 if ((device == AudioSystem.DEVICE_OUT_WIRED_HEADSET) ||
                     (device == AudioSystem.DEVICE_OUT_WIRED_HEADPHONE)) {
+                    Log.i(TAG, "onSetWiredDeviceConnectionState: setBluetoothA2dpOnInt(false)");
                     setBluetoothA2dpOnInt(false);
                 }
                 if ((device & mSafeMediaVolumeDevices) != 0) {
@@ -4275,7 +4281,7 @@ public class AudioService extends IAudioService.Stub {
                                     : "card=" + alsaCard + ";device=" + alsaDevice);
                 device = action.equals(Intent.ACTION_USB_AUDIO_ACCESSORY_PLUG) ?
                         AudioSystem.DEVICE_OUT_USB_ACCESSORY : AudioSystem.DEVICE_OUT_USB_DEVICE;
-                Log.v(TAG, "Broadcast Receiver: Got "
+                Log.i(TAG, "Broadcast Receiver: Got "
                         + (action.equals(Intent.ACTION_USB_AUDIO_ACCESSORY_PLUG) ?
                               "ACTION_USB_AUDIO_ACCESSORY_PLUG" : "ACTION_USB_AUDIO_DEVICE_PLUG")
                         + ", state = " + state + ", card: " + alsaCard + ", device: " + alsaDevice);

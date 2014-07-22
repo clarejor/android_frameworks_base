@@ -897,7 +897,7 @@ public class InputMethodManagerService extends IInputMethodManager.Stub
         final boolean inputActive = !isScreenLocked && (mInputShown || hardKeyShown);
         // We assume the softkeyboard is shown when the input is active as long as the
         // hard keyboard is not shown.
-        final boolean inputVisible = inputActive && !hardKeyShown;
+        final boolean inputVisible = inputActive;// && !hardKeyShown;
         mImeWindowVis = (inputActive ? InputMethodService.IME_ACTIVE : 0)
                 | (inputVisible ? InputMethodService.IME_VISIBLE : 0);
         updateImeWindowStatusLocked();

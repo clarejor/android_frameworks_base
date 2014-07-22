@@ -52,6 +52,7 @@ public class AudioFormat {
     /** @hide */
     public static final int ENCODING_EVRCNW = 105;  // accessed by native code
 
+    public static final int ENCODING_PCM_24BIT = 4;
     /** Invalid audio channel configuration */
     /** @deprecated use CHANNEL_INVALID instead  */
     @Deprecated    public static final int CHANNEL_CONFIGURATION_INVALID   = 0;
